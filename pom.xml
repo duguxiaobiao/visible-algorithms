@@ -12,6 +12,7 @@
         <module>money-problem</module>
         <module>getPI</module>
         <module>select-sort</module>
+        <module>insertion-sort</module>
     </modules>
 
     <name>visible-algorithms</name>
