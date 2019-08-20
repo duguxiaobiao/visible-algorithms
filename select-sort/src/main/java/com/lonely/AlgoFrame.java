@@ -2,7 +2,6 @@ package com.lonely;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 
 
 /**
@@ -52,11 +51,13 @@ public class AlgoFrame extends JFrame {
         return canvasHeight;
     }
 
-    // 设置自己的数据
-    private int[] moneys;
 
-    public void render(int[] moneys) {
-        this.moneys = moneys;
+    // TODO: 设置自己的数据
+    private SelectSortData selectSortData;
+
+
+    public void render(SelectSortData selectSortData) {
+        this.selectSortData = selectSortData;
         repaint();
     }
 
@@ -82,25 +83,35 @@ public class AlgoFrame extends JFrame {
 
             // 具体绘制
             // TODO： 绘制自己的数据data
+            if (selectSortData == null) {
+                return;
+            }
 
+            //限制线条宽度
+            AlgoVisHelper.setColor(g2d, AlgoVisHelper.Blue);
 
-            //平均每个节点的宽度
-            if (moneys != null) {
-                Arrays.sort(moneys);
+            int dataSize = selectSortData.getSize();
+            int avgWidth = getCanvasWidth() / dataSize;
 
-                int width = canvasWidth / moneys.length;
-                for (int i = 0; i < moneys.length; i++) {
-                    int x = i * width + 1;
-                    if (moneys[i] > 0) {
-                        AlgoVisHelper.setColor(g2d, AlgoVisHelper.Blue);
-                        int y = canvasHeight / 2 - moneys[i];
-                        AlgoVisHelper.fillRectangle(g2d, x, y, width - 1, moneys[i]);
-                    } else {
-                        //小于0，则使用红色标识
-                        AlgoVisHelper.setColor(g2d, AlgoVisHelper.Red);
-                        AlgoVisHelper.fillRectangle(g2d, x, canvasHeight / 2, width - 1, -moneys[i]);
-                    }
+            for (int i = 0; i < dataSize; i++) {
+                //设置颜色
+                if(i < selectSortData.getOrderedIndex()){
+                    AlgoVisHelper.setColor(g2d,AlgoVisHelper.Orange);
+                }else{
+                    AlgoVisHelper.setColor(g2d,AlgoVisHelper.Grey);
                 }
+
+                if(i == selectSortData.getCurrCompareIndex()){
+                    AlgoVisHelper.setColor(g2d,AlgoVisHelper.LightBlue);
+                }
+
+                if(i == selectSortData.getCurrMinIndex()){
+                    AlgoVisHelper.setColor(g2d,AlgoVisHelper.Indigo);
+                }
+
+                int x = i * avgWidth;
+                int y = getCanvasHeight() - selectSortData.getNums()[i];
+                AlgoVisHelper.fillRectangle(g2d, x, y, avgWidth - 1, selectSortData.getNums()[i]);
             }
 
         }

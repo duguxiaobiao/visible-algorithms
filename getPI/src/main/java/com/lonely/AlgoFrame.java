@@ -2,7 +2,7 @@ package com.lonely;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
+import java.util.LinkedList;
 
 
 /**
@@ -52,11 +52,12 @@ public class AlgoFrame extends JFrame {
         return canvasHeight;
     }
 
-    // 设置自己的数据
-    private int[] moneys;
 
-    public void render(int[] moneys) {
-        this.moneys = moneys;
+    //设置自己的数据
+    private MonteCarloData monteCarloData;
+
+    public void render(MonteCarloData monteCarloData) {
+        this.monteCarloData = monteCarloData;
         repaint();
     }
 
@@ -81,27 +82,32 @@ public class AlgoFrame extends JFrame {
             g2d.addRenderingHints(hints);
 
             // 具体绘制
-            // TODO： 绘制自己的数据data
 
+            //限制线条宽度
+            AlgoVisHelper.setStrokeWidth(g2d, 3);
+            AlgoVisHelper.setColor(g2d, AlgoVisHelper.Blue);
 
-            //平均每个节点的宽度
-            if (moneys != null) {
-                Arrays.sort(moneys);
+            if(monteCarloData == null){
+                return;
+            }
 
-                int width = canvasWidth / moneys.length;
-                for (int i = 0; i < moneys.length; i++) {
-                    int x = i * width + 1;
-                    if (moneys[i] > 0) {
-                        AlgoVisHelper.setColor(g2d, AlgoVisHelper.Blue);
-                        int y = canvasHeight / 2 - moneys[i];
-                        AlgoVisHelper.fillRectangle(g2d, x, y, width - 1, moneys[i]);
-                    } else {
-                        //小于0，则使用红色标识
+            Circle circle = monteCarloData.getCircle();
+            LinkedList<Point> points = monteCarloData.getPoints();
+
+            if (circle != null && points != null) {
+                AlgoVisHelper.strokeCircle(g2d, circle.getX(), circle.getY(), circle.getRadius());
+                for (int i = 0; i < points.size(); i++) {
+                    Point point = points.get(i);
+                    //判断生成的点是否在园内
+                    if (circle.container(point)) {
                         AlgoVisHelper.setColor(g2d, AlgoVisHelper.Red);
-                        AlgoVisHelper.fillRectangle(g2d, x, canvasHeight / 2, width - 1, -moneys[i]);
+                    } else {
+                        AlgoVisHelper.setColor(g2d, AlgoVisHelper.Green);
                     }
+                    AlgoVisHelper.fillCircle(g2d, point.x, point.y, 3);
                 }
             }
+
 
         }
 
